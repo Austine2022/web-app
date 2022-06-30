@@ -1,0 +1,53 @@
+pipeline{
+    agent any
+    tools{
+        maven "maven3.8.4"
+    }
+    triggers{
+    pollSCM '* * * * *'
+  }
+stages{
+stage("1.FetchCode"){
+steps{    
+git 'https://github.com/Austine2022/web-app.git'
+}
+}
+stage("2.Build"){
+steps{
+    sh "mvn clean package"
+}
+}
+stage("3.CodeQuality"){
+steps{
+    sh "mvn sonar:sonar"
+}
+}
+stage("4.ArtifactoryBackup"){
+steps{
+    sh "mvn deploy"
+}
+}
+stage("5.DeploytoUAT"){
+steps{
+    deploy adapters: [tomcat9(credentialsId: 'tomcat9_cred', path: '', url: 'http://3.98.127.145:8080')], contextPath: null, war: 'target/*.war'
+}
+}
+stage("6.Approval"){
+steps{
+    timeout(time:5, unit:'DAYS'){
+    input message: 'Approval Required'
+}
+}
+}
+stage("7.DeploytoProd"){
+steps{
+    deploy adapters: [tomcat9(credentialsId: 'tomcat9_cred', path: '', url: 'http://3.98.127.145:8080')], contextPath: null, war: 'target/*.war'
+}
+}
+stage("8.SlackNotification"){
+steps{
+    slackSend channel: 'slack-jenkins-integration', message: "*${currentBuild.currentResult}:* Job ${env.JOB_NAME} build ${env.BUILD_NUMBER} \\n More info at: ${env.BUILD_URL}"
+}
+}
+}
+}
