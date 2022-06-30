@@ -29,7 +29,7 @@ steps{
 }
 stage("5.DeploytoUAT"){
 steps{
-    deploy adapters: [tomcat9(credentialsId: 'tomcat9_cred', path: '', url: 'http://3.98.127.145:8080')], contextPath: null, war: 'target/*.war'
+    deploy adapters: [tomcat9(credentialsId: 'tomcat9_cred', path: '', url: 'http://35.183.180.145:8080')], contextPath: null, war: 'target/*.war'
 }
 }
 stage("6.Approval"){
@@ -41,7 +41,7 @@ steps{
 }
 stage("7.DeploytoProd"){
 steps{
-    deploy adapters: [tomcat9(credentialsId: 'tomcat9_cred', path: '', url: 'http://3.98.127.145:8080')], contextPath: null, war: 'target/*.war'
+    deploy adapters: [tomcat9(credentialsId: 'tomcat9_cred', path: '', url: 'http://35.183.180.145:8080')], contextPath: null, war: 'target/*.war'
 }
 }
 stage("8.SlackNotification"){
